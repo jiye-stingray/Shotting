@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float speed;     //플레이어의 스피드
+  
 
     public bool isTouchTop; //경계선과 충돌여부 판단하는 변수
     public bool isTouchBottom;
     public bool isTouchRight;
     public bool isTouchLeft;
 
-    public GameObject bulletObjA;
+    public float speed;     //플레이어의 스피드
+    public float power;     //파워 (파워아이템 먹었을 때 증가함)
+    public float maxShotDealy;  //최대 딜레이
+    public float curShotDealy;  //현재 딜레이
+
+
+    public GameObject bulletObjA; //총알 오브젝트 prefabs
     public GameObject bulletObjB;
 
 
@@ -22,6 +28,13 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
     }
     void Update()
+    {
+        Move();
+        Fire();
+        Reload();
+    }
+
+    void Move()
     {
         //이동 키 입력
         float h = Input.GetAxisRaw("Horizontal");
@@ -39,14 +52,61 @@ public class Player : MonoBehaviour
 
         transform.position = curPos + nextPos;
 
-        if (Input.GetButtonDown("Horizontal")||
+        if (Input.GetButtonDown("Horizontal") || //애니메이션 트리거 세팅
             Input.GetButtonUp("Horizontal"))
         {
-            anim.SetInteger("Input",(int)h);
+            anim.SetInteger("Input", (int)h);
         }
-
     }
 
+    void Fire()
+    {
+        if (!Input.GetButton("Fire1")) //버튼 체크
+            return;
+        if (curShotDealy < maxShotDealy) //아직 장전이 되지 않았을 때 리턴 (장전 시간이 충족 되지 않았다)
+            return;
+
+        switch (power)
+        {
+            case 1:
+                
+                GameObject bullet = Instantiate(bulletObjA, transform.position, transform.rotation);
+                Rigidbody2D rigid = bullet.GetComponent<Rigidbody2D>();
+                rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse); 
+                break;
+            case 2:
+                //+ transform은 무조건 Vector3
+                //생성 위치에서 방향 백터 더하기
+                GameObject bulletR = Instantiate(bulletObjA, transform.position + Vector3.right * 0.1f, transform.rotation);
+                GameObject bulletL = Instantiate(bulletObjA, transform.position + Vector3.left * 0.1f, transform.rotation);
+
+                Rigidbody2D rigidR = bulletR.GetComponent<Rigidbody2D>();
+                Rigidbody2D rigidL = bulletL.GetComponent<Rigidbody2D>();
+                rigidR.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                rigidL.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                break;
+            case 3:
+                GameObject bulletRR = Instantiate(bulletObjA, transform.position + Vector3.right * 0.35f, transform.rotation);
+                GameObject bulletCC = Instantiate(bulletObjB, transform.position, transform.rotation);
+                GameObject bulletLL = Instantiate(bulletObjA, transform.position + Vector3.left * 0.35f, transform.rotation);
+                Rigidbody2D rigidRR = bulletRR.GetComponent<Rigidbody2D>();
+                Rigidbody2D rigidCC = bulletCC.GetComponent<Rigidbody2D>();
+                Rigidbody2D rigidLL = bulletLL.GetComponent<Rigidbody2D>();
+                rigidRR.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                rigidCC.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                rigidLL.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                break;
+        }
+        
+
+        
+        curShotDealy = 0; //딜레이변수 초기화
+    }
+
+    void Reload()
+    {
+        curShotDealy += Time.deltaTime;
+    }
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Border")

@@ -558,11 +558,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45092303ae0fcbb478f5c6d638a7ac03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
   isTouchTop: 0
   isTouchBottom: 0
   isTouchRight: 0
   isTouchLeft: 0
+  speed: 3
+  power: 0
+  maxShotDealy: 0.15
+  curShotDealy: 0
+  bulletObjA: {fileID: 4394737214705718064, guid: 982986b2d1562ae479a8b0eae1d4539a, type: 3}
+  bulletObjB: {fileID: 7377864900576956837, guid: 5582d6954c1e33f409bd7544fb2d37f9, type: 3}
 --- !u!212 &624475059
 SpriteRenderer:
   m_ObjectHideFlags: 0

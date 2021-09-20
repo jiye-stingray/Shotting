@@ -61,6 +61,7 @@ public class Player : MonoBehaviour
 
     void Fire()
     {
+        
         if (!Input.GetButton("Fire1")) //버튼 체크
             return;
         if (curShotDealy < maxShotDealy) //아직 장전이 되지 않았을 때 리턴 (장전 시간이 충족 되지 않았다)
@@ -69,7 +70,6 @@ public class Player : MonoBehaviour
         switch (power)
         {
             case 1:
-                
                 GameObject bullet = Instantiate(bulletObjA, transform.position, transform.rotation);
                 Rigidbody2D rigid = bullet.GetComponent<Rigidbody2D>();
                 rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse); 

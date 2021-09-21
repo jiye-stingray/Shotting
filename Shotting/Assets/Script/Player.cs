@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
     public float maxShotDealy;  //최대 딜레이
     public float curShotDealy;  //현재 딜레이
 
+    public GameManager gameManager;
+
 
     public GameObject bulletObjA; //총알 오브젝트 prefabs
     public GameObject bulletObjB;
@@ -130,6 +132,14 @@ public class Player : MonoBehaviour
                 default:
                     break;
             }
+        }
+        else if(collision.gameObject.tag == "Enemy"|| collision.gameObject.tag == "EnemyBullet")
+        {
+            //플레이어를 복귀시키는 로직을 GameManager에서 관리
+            gameManager.RespawnPlayer();
+            //적군이나 적군 총알에 부딪혔을 때
+            gameObject.SetActive(false);
+            
         }
     }
 

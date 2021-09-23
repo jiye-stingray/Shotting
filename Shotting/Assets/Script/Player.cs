@@ -11,18 +11,21 @@ public class Player : MonoBehaviour
     public bool isTouchRight;
     public bool isTouchLeft;
 
+    public int score;   //점수
+    public int life;    //목숨
     public float speed;     //플레이어의 스피드
     public float power;     //파워 (파워아이템 먹었을 때 증가함)
     public float maxShotDealy;  //최대 딜레이
     public float curShotDealy;  //현재 딜레이
 
-    public GameManager gameManager;
+    
 
 
     public GameObject bulletObjA; //총알 오브젝트 prefabs
     public GameObject bulletObjB;
 
-
+    public GameManager gameManager;
+    public bool isHit;
     Animator anim;
 
     void Awake()
@@ -133,13 +136,27 @@ public class Player : MonoBehaviour
                     break;
             }
         }
-        else if(collision.gameObject.tag == "Enemy"|| collision.gameObject.tag == "EnemyBullet")
+        else if(collision.gameObject.tag == "Enemy"|| collision.gameObject.tag == "EnemyBullet") //죽음
         {
-            //플레이어를 복귀시키는 로직을 GameManager에서 관리
-            gameManager.RespawnPlayer();
+            if (isHit)
+                return;
+            isHit = true;
+            life--; //목숨 하나 죽음
+            gameManager.UpdateLifeIcon(life);   //생명 이미지 관리
+
+            if(life == 0) //죽었을때
+            {
+                gameManager.GameOver();
+            }
+            else
+            {
+                //플레이어를 복귀시키는 로직을 GameManager에서 관리
+                gameManager.RespawnPlayer();
+            }
+            
             //적군이나 적군 총알에 부딪혔을 때
             gameObject.SetActive(false);
-            
+            Destroy(collision.gameObject);
         }
     }
 

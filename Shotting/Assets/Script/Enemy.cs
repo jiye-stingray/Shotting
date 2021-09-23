@@ -5,7 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public string enemyname;    //적군 크기에 따른 이름
-
+    public int EnemyScore;      //적군이 각자 가질 수 있는 Score변수
     public float speed;     //속도
     public float health;    //체력(몇 발 맞았을 때 죽는지
     public Sprite[] sprites;    //spriteRender를 사용할 때
@@ -78,6 +78,8 @@ public class Enemy : MonoBehaviour
 
         if (health <= 0) // 체력이 0 이하 일때
         {
+            Player playerlogic = player.GetComponent<Player>();
+            playerlogic.score += EnemyScore;    //플레이어의 점수에 자신의 점수를 넣어줌
             Destroy(gameObject); //자신을 파괴
         }
           

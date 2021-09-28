@@ -20,6 +20,11 @@ public class Enemy : MonoBehaviour
 
     SpriteRenderer spriteRenderer;  //피격 당했을 때 반투명한 이미지로 바꾸기
 
+    void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+    }
 
     void Update()
     {
@@ -64,11 +69,7 @@ public class Enemy : MonoBehaviour
         curShotDealy += Time.deltaTime;
     }
 
-    void Awake()
-    {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        
-    }
+   
 
     void OnHit(int dmg) //플레이어가 쏜 총알을 맞았을 때 데미지
     {

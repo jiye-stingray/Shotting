@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
-        gameOverSet.SetActive(true);
+        gameOverSet.SetActive(true);    //GameOver UI Set
     }
 
     public void GameRetry()

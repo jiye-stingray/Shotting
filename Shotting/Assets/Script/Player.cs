@@ -14,19 +14,20 @@ public class Player : MonoBehaviour
     public int score;   //점수
     public int life;    //목숨
     public float speed;     //플레이어의 스피드
-    public float power;     //파워 (파워아이템 먹었을 때 증가함)
+    public int power;     //파워 (파워아이템 먹었을 때 증가함)
+    public int maxpower;    //최대 파워
     public float maxShotDealy;  //최대 딜레이
     public float curShotDealy;  //현재 딜레이
-
-    
 
 
     public GameObject bulletObjA; //총알 오브젝트 prefabs
     public GameObject bulletObjB;
 
     public GameManager gameManager;
+    public GameObject boomEffect;   //폭탄 터졌을 때 effect
     public bool isHit;
     Animator anim;
+ 
 
     void Awake()
     {
@@ -157,6 +158,32 @@ public class Player : MonoBehaviour
             //적군이나 적군 총알에 부딪혔을 때
             gameObject.SetActive(false);
             Destroy(collision.gameObject);
+        }
+        else if(collision.gameObject.tag == "Item") //충돌한 오브젝트가 Item일때
+        {
+            Item item = collision.gameObject.GetComponent<Item>();  //Item 로직 가져오기
+            switch (item.type) { //type 변수 이름으로 구분
+
+                case "Coin":
+                    score += 1000;  //점수 추가
+                    break;
+                
+                case "Power":
+                    if (power == maxpower)
+                        score += 500;
+                    else
+                        power++;    
+                    break;
+
+                case "Boom":
+                    //#1. Effect Visible
+                    boomEffect.SetActive(true);
+
+                    //#2. Remove Enemy
+                    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                    break;
+            }
+
         }
     }
 

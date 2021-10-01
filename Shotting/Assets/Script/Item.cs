@@ -10,7 +10,7 @@ public class Item : MonoBehaviour
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();    
-        rigid.velocity = Vector2.down * 0.1f;   //이동
+        rigid.velocity = Vector2.down * 1f;   //이동
     }
 
     void Update()

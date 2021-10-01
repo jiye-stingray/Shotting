@@ -16,6 +16,10 @@ public class Enemy : MonoBehaviour
     public GameObject bulletObjA; //총알 오브젝트 prefabs
     public GameObject bulletObjB;
 
+    public GameObject ItemCoin;     //아이템들
+    public GameObject ItemPower;
+    public GameObject ItemBoom;
+
     public GameObject player;       //GameManager 한테서 받아옴
 
     SpriteRenderer spriteRenderer;  //피격 당했을 때 반투명한 이미지로 바꾸기
@@ -71,8 +75,11 @@ public class Enemy : MonoBehaviour
 
    
 
-    void OnHit(int dmg) //플레이어가 쏜 총알을 맞았을 때 데미지
+    public void OnHit(int dmg) //플레이어가 쏜 총알을 맞았을 때 데미지
     {
+        //아이템이 다중으로 만들어지지 않도록 예외 처리
+        if (health <= 0)
+            return;
         health -= dmg;
         spriteRenderer.sprite = sprites[1]; //평소 스프라이트는 0, 피격시 스프라이트는 1
         Invoke("ReturnSprite",0.1f);
@@ -81,7 +88,30 @@ public class Enemy : MonoBehaviour
         {
             Player playerlogic = player.GetComponent<Player>();
             playerlogic.score += EnemyScore;    //플레이어의 점수에 자신의 점수를 넣어줌
-            Destroy(gameObject); //자신을 파괴
+
+
+            //#. Random Ratio Item Drop
+            int ran = Random.Range(0, 10);
+            //랜덤 숫자를 이용하여 Item 로직 작성
+            if (ran < 3)    //Not Item 30%
+            {
+                Debug.Log("Not Item");
+            }
+            else if (ran < 6)   //Coin 30%
+            {
+                Instantiate(ItemCoin, transform.position, ItemCoin.transform.rotation);
+            }
+            else if (ran < 8)   //Power 20%
+            {
+                Instantiate(ItemPower, transform.position, ItemPower.transform.rotation);
+            }
+            else if (ran < 10)   //Boom 20%
+            {
+                Instantiate(ItemBoom, transform.position, ItemBoom.transform.rotation);
+            }
+            
+
+            Destroy(gameObject); 
         }
           
     }

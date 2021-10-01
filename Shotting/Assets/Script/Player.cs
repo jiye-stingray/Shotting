@@ -10,12 +10,18 @@ public class Player : MonoBehaviour
     public bool isTouchBottom;
     public bool isTouchRight;
     public bool isTouchLeft;
+   
 
     public int score;   //점수
     public int life;    //목숨
     public float speed;     //플레이어의 스피드
+
     public int power;     //파워 (파워아이템 먹었을 때 증가함)
-    public int maxpower;    //최대 파워
+    public int maxpower;    
+
+    public int boom;    //폭탄도 파워처럼 최대크기와 현재 크기로 증가
+    public int maxboom;
+
     public float maxShotDealy;  //최대 딜레이
     public float curShotDealy;  //현재 딜레이
 
@@ -25,7 +31,10 @@ public class Player : MonoBehaviour
 
     public GameManager gameManager;
     public GameObject boomEffect;   //폭탄 터졌을 때 effect
-    public bool isHit;
+
+    public bool isHit;      //공격을 받은 상태에서 또 받지 못하게 하기
+    public bool isBoomTime; //폭탄이 터지고 있는 상황
+
     Animator anim;
  
 
@@ -37,6 +46,7 @@ public class Player : MonoBehaviour
     {
         Move();
         Fire();
+        Boom();
         Reload();
     }
 
@@ -70,6 +80,7 @@ public class Player : MonoBehaviour
         
         if (!Input.GetButton("Fire1")) //버튼 체크
             return;
+
         if (curShotDealy < maxShotDealy) //아직 장전이 되지 않았을 때 리턴 (장전 시간이 충족 되지 않았다)
             return;
 
@@ -109,6 +120,39 @@ public class Player : MonoBehaviour
         curShotDealy = 0; //딜레이변수 초기화
     }
 
+    void Boom()
+    {
+        if (!Input.GetButton("Fire2")) //버튼 체크
+            return;
+        if (isBoomTime)
+            return;
+        if (boom == 0)
+            return;
+
+        boom--;
+        gameManager.UpdateBoomIcon(boom);   
+        isBoomTime = true;      
+
+        //#1. Effect Visible
+        boomEffect.SetActive(true);
+        //폭탄 이팩트는 Invoke()로 시간차 비 활성화
+        Invoke("OffEffect", 5f);
+        //#2. Remove Enemy
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            Enemy enemyLogic = enemies[i].GetComponent<Enemy>();
+            enemyLogic.OnHit(100);
+        }
+
+        //#3.Remove Enemy Bullet
+        GameObject[] bullets = GameObject.FindGameObjectsWithTag("EnemyBullet");
+        for (int i = 0; i < bullets.Length; i++)
+        {
+            Destroy(bullets[i]);
+        }
+
+    }
     void Reload()
     {
         curShotDealy += Time.deltaTime;
@@ -131,8 +175,6 @@ public class Player : MonoBehaviour
                 case "Left":
                     isTouchLeft = true;
                     break;
-
-
                 default:
                     break;
             }
@@ -176,15 +218,25 @@ public class Player : MonoBehaviour
                     break;
 
                 case "Boom":
-                    //#1. Effect Visible
-                    boomEffect.SetActive(true);
-
-                    //#2. Remove Enemy
-                    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                    if (boom == maxboom)
+                        score += 50;
+                    else
+                    {
+                        boom++;
+                        gameManager.UpdateBoomIcon(boom);
+                    }
+                        
+                    
                     break;
             }
-
+            Destroy(collision.gameObject);
         }
+    }
+
+    void OffEffect()
+    {
+        boomEffect.SetActive(false);
+        isBoomTime = false;
     }
 
     void OnTriggerExit2D(Collider2D collision) //플래그 지우기

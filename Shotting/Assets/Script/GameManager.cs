@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public Text scoreText;      //점수 텍스트
     public Image[] lifeImage;   //목숨 이미지
+    public Image[] BoomImage;   //폭탄 이미지
     public GameObject gameOverSet;  
 
 
@@ -85,6 +86,22 @@ public class GameManager : MonoBehaviour
         for (int index = 0; index < life; index++)
         {
             lifeImage[index].color = new Color(1, 1, 1, 1);
+        }
+    }
+
+    public void UpdateBoomIcon(int boom)
+    {
+        //Image를 일단 모두 투명 상태로 두고, 목숨대로 반투명 설정
+
+        //# Boom Init Disable
+        for (int index = 0; index < 3; index++)
+        {
+            BoomImage[index].color = new Color(1, 1, 1, 0);
+        }
+        //# Boom Active
+        for (int index = 0; index < boom; index++)
+        {
+            BoomImage[index].color = new Color(1, 1, 1, 1);
         }
     }
 

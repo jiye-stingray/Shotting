@@ -89,6 +89,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //폭탄 UI 
     public void UpdateBoomIcon(int boom)
     {
         //Image를 일단 모두 투명 상태로 두고, 목숨대로 반투명 설정

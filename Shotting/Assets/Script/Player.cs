@@ -30,6 +30,8 @@ public class Player : MonoBehaviour
     public GameObject bulletObjB;
 
     public GameManager gameManager;
+    public ObjectManager objectManager; //오브젝트 풀링 사용을 위한 로직
+
     public GameObject boomEffect;   //폭탄 터졌을 때 effect
 
     public bool isHit;      //공격을 받은 상태에서 또 받지 못하게 하기
@@ -87,36 +89,46 @@ public class Player : MonoBehaviour
         switch (power)
         {
             case 1:
-                GameObject bullet = Instantiate(bulletObjA, transform.position, transform.rotation);
+                GameObject bullet = objectManager.MakeObj("BulletPlayerA");
+                bullet.transform.position = transform.position;
                 Rigidbody2D rigid = bullet.GetComponent<Rigidbody2D>();
                 rigid.AddForce(Vector2.up * 10, ForceMode2D.Impulse); 
                 break;
             case 2:
                 //+ transform은 무조건 Vector3
                 //생성 위치에서 방향 백터 더하기
-                GameObject bulletR = Instantiate(bulletObjA, transform.position + Vector3.right * 0.1f, transform.rotation);
-                GameObject bulletL = Instantiate(bulletObjA, transform.position + Vector3.left * 0.1f, transform.rotation);
+                GameObject bulletR = objectManager.MakeObj("BulletPlayerA");
+                bulletR.transform.position = transform.position + Vector3.right * 0.1f;
+
+                GameObject bulletL = objectManager.MakeObj("BulletPlayerA");
+                bulletL.transform.position = transform.position + Vector3.left * 0.1f;
 
                 Rigidbody2D rigidR = bulletR.GetComponent<Rigidbody2D>();
                 Rigidbody2D rigidL = bulletL.GetComponent<Rigidbody2D>();
+
                 rigidR.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidL.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 break;
+
             case 3:
-                GameObject bulletRR = Instantiate(bulletObjA, transform.position + Vector3.right * 0.35f, transform.rotation);
-                GameObject bulletCC = Instantiate(bulletObjB, transform.position, transform.rotation);
-                GameObject bulletLL = Instantiate(bulletObjA, transform.position + Vector3.left * 0.35f, transform.rotation);
+                GameObject bulletRR = objectManager.MakeObj("BulletPlayerA");
+                bulletRR.transform.position = transform.position + Vector3.right * 0.35f;
+
+                GameObject bulletCC = objectManager.MakeObj("BulletPlayerB");
+                bulletCC.transform.position = transform.position;
+
+                GameObject bulletLL = objectManager.MakeObj("BulletPlayerA");
+                bulletLL.transform.position = transform.position + Vector3.left * 0.35f;
+
                 Rigidbody2D rigidRR = bulletRR.GetComponent<Rigidbody2D>();
                 Rigidbody2D rigidCC = bulletCC.GetComponent<Rigidbody2D>();
                 Rigidbody2D rigidLL = bulletLL.GetComponent<Rigidbody2D>();
+
                 rigidRR.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidCC.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidLL.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 break;
         }
-        
-
-        
         curShotDealy = 0; //딜레이변수 초기화
     }
 
@@ -137,19 +149,48 @@ public class Player : MonoBehaviour
         boomEffect.SetActive(true);
         //폭탄 이팩트는 Invoke()로 시간차 비 활성화
         Invoke("OffEffect", 5f);
-        //#2. Remove Enemy
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        for (int i = 0; i < enemies.Length; i++)
+        //#2. Remove enemy
+        GameObject[] enemiesS = objectManager.GetPool("EnemyS");
+        GameObject[] enemiesM = objectManager.GetPool("EnemyM");
+        GameObject[] enemiesL = objectManager.GetPool("EnemyL");
+        for (int i = 0; i < enemiesS.Length; i++)
         {
-            Enemy enemyLogic = enemies[i].GetComponent<Enemy>();
-            enemyLogic.OnHit(100);
+            if (enemiesS[i].activeSelf)
+            {
+                Enemy enemyLogic = enemiesS[i].GetComponent<Enemy>();
+                enemyLogic.OnHit(1000);
+            }
+            
+        }
+        for (int i = 0; i < enemiesM.Length; i++)
+        {
+            if (enemiesM[i].activeSelf)
+            {
+                Enemy enemyLogic = enemiesM[i].GetComponent<Enemy>();
+                enemyLogic.OnHit(1000);
+            }
+            
+        }
+        for (int i = 0; i < enemiesL.Length; i++)
+        {
+            if (enemiesL[i].activeSelf)
+            {
+                Enemy enemyLogic = enemiesL[i].GetComponent<Enemy>();
+                enemyLogic.OnHit(1000); 
+            }
+            
         }
 
         //#3.Remove Enemy Bullet
-        GameObject[] bullets = GameObject.FindGameObjectsWithTag("EnemyBullet");
-        for (int i = 0; i < bullets.Length; i++)
+        GameObject[] bulletA = objectManager.GetPool("EnemyBulletA");
+        GameObject[] bulletB = objectManager.GetPool("EnemyBulletB");
+        for (int i = 0; i < bulletA.Length; i++)
         {
-            Destroy(bullets[i]);
+            bulletA[i].SetActive(false);
+        }
+        for (int i = 0; i < bulletB.Length; i++)
+        {
+            bulletB[i].SetActive(false);
         }
 
     }
@@ -199,7 +240,7 @@ public class Player : MonoBehaviour
             
             //적군이나 적군 총알에 부딪혔을 때
             gameObject.SetActive(false);
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
         }
         else if(collision.gameObject.tag == "Item") //충돌한 오브젝트가 Item일때
         {
@@ -229,7 +270,7 @@ public class Player : MonoBehaviour
                     
                     break;
             }
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
         }
     }
 

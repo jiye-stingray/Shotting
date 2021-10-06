@@ -15,7 +15,7 @@ public class Background : MonoBehaviour
     //카메라 높이
     float viewHeghit;
 
-    private void Awake()
+    void Awake()
     {
         //현재 씬에서 사용하는 메인 카메라의 실제 View 높이
         // Camera View 높이 = Size * 2 

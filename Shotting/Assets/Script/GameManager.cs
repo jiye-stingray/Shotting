@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject[] enemyObjects; //적 오브젝트 배열
+    public string[] enemyObjects; //적 오브젝트 type
     public Transform[] spawnPoints;   //적 프리팹 생성 위치의 배열 변수
 
     public float maxSpawnDelay;     //적 생성 딜레이 변수 선언
@@ -19,9 +19,14 @@ public class GameManager : MonoBehaviour
     public Text scoreText;      //점수 텍스트
     public Image[] lifeImage;   //목숨 이미지
     public Image[] BoomImage;   //폭탄 이미지
-    public GameObject gameOverSet;  
+    public GameObject gameOverSet;
 
+    public ObjectManager objectManager; // 오브젝트 풀 하기 위한 로직 불러오기
 
+    void Awake()
+    {
+        enemyObjects = new string[]{ "EnemyL", "EnemyM", "EnemyS" };
+    }
     void Update()
     {
         curSpawnDelay += Time.deltaTime; 
@@ -45,15 +50,17 @@ public class GameManager : MonoBehaviour
     {
         int ranEnemy = Random.Range(0 , 3);
         int ranPoint = Random.Range(0, 9);
-        GameObject enemy = Instantiate(enemyObjects[ranEnemy],
-                                        spawnPoints[ranPoint].position,
-                                        spawnPoints[ranPoint].rotation
-                                        );
-
+        //기존의 Instantiate를 오브젝트 풀링으로 교체
+        GameObject enemy = objectManager.MakeObj(enemyObjects[ranEnemy]);
+        //위치와 각도는 인스턴스 변수에서 적용
+        enemy.transform.position = spawnPoints[ranPoint].position;
         Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();  
         Enemy enemyLogic = enemy.GetComponent<Enemy>();     //Enemy가 가진 speed변수를 사용하기 위해
 
-        enemyLogic.player = player; //적 생성 직후에 플레이어 변수를 넘겨주는 것
+        //enemy는 프리팹이라서 다른 오브젝트를 바로 받아 올 수 없다. 
+        //그래서 생성 직후에  GameManager에서 넘겨준다
+        enemyLogic.player = player; 
+        enemyLogic.objectManager = objectManager;   
 
         //적 비행기 속도를 GameManager가 관리하게 수정
         if (ranPoint == 5 || ranPoint == 6)

@@ -22,12 +22,31 @@ public class Enemy : MonoBehaviour
 
     public GameObject player;       //GameManager 한테서 받아옴
 
+    //오브젝트 풀링 하기 위해 사용하는 로직
+    public ObjectManager objectManager; 
+
     SpriteRenderer spriteRenderer;  //피격 당했을 때 반투명한 이미지로 바꾸기
 
     void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
 
+    }
+
+    void OnEnable()
+    {
+        switch (enemyname)
+        {
+            case "L":
+                health = 40;
+                break;
+            case "M":
+                health = 10;
+                break;
+            case "S":
+                health = 3;
+                break;
+        }
     }
 
     void Update()
@@ -42,7 +61,8 @@ public class Enemy : MonoBehaviour
 
         if(enemyname == "S") //enemyname이라는 변수로 적군의 공격방식 정하기
         {
-            GameObject bullet = Instantiate(bulletObjA, transform.position, transform.rotation);
+            GameObject bullet = objectManager.MakeObj("BulletEnemyA");
+            bullet.transform.position = transform.position;
             Rigidbody2D rigid = bullet.GetComponent<Rigidbody2D>();
             
             //목표물로 방향 = 목표물 위치 - 자신의 위치
@@ -51,8 +71,10 @@ public class Enemy : MonoBehaviour
         }
         else if(enemyname == "L")
         {
-            GameObject bulletR = Instantiate(bulletObjB, transform.position + Vector3.right * 0.3f, transform.rotation);
-            GameObject bulletL = Instantiate(bulletObjB, transform.position + Vector3.left * 0.3f, transform.rotation);
+            GameObject bulletR = objectManager.MakeObj("BulletEnemyB");
+            bulletR.transform.position = transform.position + Vector3.right * 0.3f;
+            GameObject bulletL = objectManager.MakeObj("BulletEnemyB");
+            bulletL.transform.position = transform.position + Vector3.left * 0.3f;
 
             Rigidbody2D rigidR = bulletL.GetComponent<Rigidbody2D>();
             Rigidbody2D rigidL = bulletR.GetComponent<Rigidbody2D>();
@@ -89,7 +111,6 @@ public class Enemy : MonoBehaviour
             Player playerlogic = player.GetComponent<Player>();
             playerlogic.score += EnemyScore;    //플레이어의 점수에 자신의 점수를 넣어줌
 
-
             //#. Random Ratio Item Drop
             int ran = Random.Range(0, 10);
             //랜덤 숫자를 이용하여 Item 로직 작성
@@ -99,19 +120,26 @@ public class Enemy : MonoBehaviour
             }
             else if (ran < 6)   //Coin 30%
             {
-                Instantiate(ItemCoin, transform.position, ItemCoin.transform.rotation);
+                GameObject itemCoin = objectManager.MakeObj("ItemCoin");
+                itemCoin.transform.position = transform.position;
             }
             else if (ran < 8)   //Power 20%
             {
-                Instantiate(ItemPower, transform.position, ItemPower.transform.rotation);
+                GameObject itemPower = objectManager.MakeObj("ItemPower");
+                itemPower.transform.position = transform.position;
             }
             else if (ran < 10)   //Boom 20%
             {
-                Instantiate(ItemBoom, transform.position, ItemBoom.transform.rotation);
-            }
-            
+                GameObject itemBoom = objectManager.MakeObj("ItemBoom");
+                itemBoom.transform.position = transform.position;
 
-            Destroy(gameObject); 
+            }
+
+            //Destroy()는 false로 교체
+            gameObject.SetActive(false);
+
+            //Quaternion.identity : 기본 회전 값 0
+            transform.rotation = Quaternion.identity;
         }
           
     }
@@ -124,14 +152,19 @@ public class Enemy : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "BorderBullet")
-            Destroy(gameObject);
+        {
+            gameObject.SetActive(false);
+
+            //Quaternion.identity : 기본 회전 값 0
+            transform.rotation = Quaternion.identity;
+        }
         else if (collision.gameObject.tag == "PlayerBullet") //플레이어의 총알에 맞았을 때 
         {
 
             Bullet bullet = collision.gameObject.GetComponent<Bullet>();
             OnHit(bullet.dmg); //총알의 데미지 만큼 체력을 감소
 
-            Destroy(collision.gameObject);  //피격시 플레이어의 총알도 삭제
+            collision.gameObject.SetActive(false);  //피격시 플레이어의 총알도 비활성화
         }
        
     }

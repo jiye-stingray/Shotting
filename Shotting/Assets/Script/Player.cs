@@ -153,15 +153,7 @@ public class Player : MonoBehaviour
         GameObject[] enemiesS = objectManager.GetPool("EnemyS");
         GameObject[] enemiesM = objectManager.GetPool("EnemyM");
         GameObject[] enemiesL = objectManager.GetPool("EnemyL");
-        for (int i = 0; i < enemiesS.Length; i++)
-        {
-            if (enemiesS[i].activeSelf)
-            {
-                Enemy enemyLogic = enemiesS[i].GetComponent<Enemy>();
-                enemyLogic.OnHit(1000);
-            }
-            
-        }
+      
         for (int i = 0; i < enemiesM.Length; i++)
         {
             if (enemiesM[i].activeSelf)

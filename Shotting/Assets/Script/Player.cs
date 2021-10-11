@@ -37,6 +37,8 @@ public class Player : MonoBehaviour
     public bool isHit;      //공격을 받은 상태에서 또 받지 못하게 하기
     public bool isBoomTime; //폭탄이 터지고 있는 상황
 
+    public GameObject[] followers;      //보조무기배열
+
     Animator anim;
  
 
@@ -110,7 +112,7 @@ public class Player : MonoBehaviour
                 rigidL.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 break;
 
-            case 3:
+            default:
                 GameObject bulletRR = objectManager.MakeObj("BulletPlayerA");
                 bulletRR.transform.position = transform.position + Vector3.right * 0.35f;
 
@@ -128,6 +130,8 @@ public class Player : MonoBehaviour
                 rigidCC.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidLL.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 break;
+
+
         }
         curShotDealy = 0; //딜레이변수 초기화
     }
@@ -247,7 +251,10 @@ public class Player : MonoBehaviour
                     if (power == maxpower)
                         score += 500;
                     else
-                        power++;    
+                    {
+                        power++;
+                        AddFollower();
+                    }
                     break;
 
                 case "Boom":
@@ -266,12 +273,24 @@ public class Player : MonoBehaviour
         }
     }
 
+    void AddFollower()
+    {
+        if (power == 4)
+            followers[0].SetActive(true);
+        else if (power == 5)
+            followers[1].SetActive(true);
+        else if (power == 6)
+            followers[2].SetActive(true);
+
+    }
+
     void OffEffect()
     {
         boomEffect.SetActive(false);
         isBoomTime = false;
     }
 
+    
     void OnTriggerExit2D(Collider2D collision) //플래그 지우기
     {
         if (collision.gameObject.tag == "Border")

@@ -36,15 +36,26 @@ public class Player : MonoBehaviour
 
     public bool isHit;      //공격을 받은 상태에서 또 받지 못하게 하기
     public bool isBoomTime; //폭탄이 터지고 있는 상황
+    public bool isRespawnTime;  //무적 타임 플래그 bool 변수 생성
 
     public GameObject[] followers;      //보조무기배열
-
+   
     Animator anim;
- 
+    public SpriteRenderer spriteRenderer;
+
 
     void Awake()
     {
         anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    void OnEnable()
+    {
+        
+        Upbeatable();
+        Invoke("Upbeatable", 3);
+
     }
     void Update()
     {
@@ -54,6 +65,27 @@ public class Player : MonoBehaviour
         Reload();
     }
 
+    void Upbeatable()
+    {
+        isRespawnTime = !isRespawnTime;
+        if (isRespawnTime) //무적 타임 이팩트 (투명)
+        {
+            spriteRenderer.color = new Color(1, 1, 1, 0.5f);
+
+            for (int i = 0; i < followers.Length; i++)
+            {
+                followers[i].GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+            }
+        }
+        else
+        {   //무적타임 종료 (원래대로)
+            spriteRenderer.color = new Color(1, 1, 1, 1);
+            for (int i = 0; i < followers.Length; i++)
+            {
+                followers[i].GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+            }
+        }
+    }
     void Move()
     {
         //이동 키 입력
@@ -218,6 +250,8 @@ public class Player : MonoBehaviour
         }
         else if(collision.gameObject.tag == "Enemy"|| collision.gameObject.tag == "EnemyBullet") //죽음
         {
+            if (isRespawnTime)  //변수를 활용하여 충돌 이벤트를 제한
+                return;
             if (isHit)
                 return;
             isHit = true;

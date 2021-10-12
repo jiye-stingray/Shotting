@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         spawnList = new List<Spawn>();
-        enemyObjects = new string[]{ "EnemyS", "EnemyM", "EnemyL" };
+        enemyObjects = new string[]{ "EnemyS", "EnemyM", "EnemyL","EnemyB" };
         ReadSpawnFile();
     }
     void Update()
@@ -74,7 +74,6 @@ public class GameManager : MonoBehaviour
         {
             //ReadLine : 텍스트 데이터를 한 줄 씩 반환(자동 줄 바꿈)
             string line = stringReader.ReadLine();
-            Debug.Log(line);
             if (line == null) break;
 
             //#.리스폰 데이터 생성
@@ -109,6 +108,9 @@ public class GameManager : MonoBehaviour
                 break;
             case "L":
                 enemyIndex = 2;
+                break;
+            case "B":
+                enemyIndex = 3;
                 break;
             default:
                 break;

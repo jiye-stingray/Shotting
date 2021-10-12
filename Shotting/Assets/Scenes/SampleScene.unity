@@ -1390,7 +1390,7 @@ GameObject:
   - component: {fileID: 624475063}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1414,11 +1414,11 @@ MonoBehaviour:
   score: 0
   life: 3
   speed: 3
-  power: 1
+  power: 3
   maxpower: 6
   boom: 0
   maxboom: 3
-  maxShotDealy: 0.15
+  maxShotDealy: 0.3
   curShotDealy: 0
   bulletObjA: {fileID: 4394737214705718064, guid: 982986b2d1562ae479a8b0eae1d4539a, type: 3}
   bulletObjB: {fileID: 7377864900576956837, guid: 24a01aea603da6840ae704af7fbc845c, type: 3}
@@ -2484,6 +2484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baef1db00a847044b9907d4a9a7f5ea8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyBPrefab: {fileID: 7298471925086092405, guid: d1fbcb1209f405b47a559ef315fbb4f4, type: 3}
   enemyLPrefab: {fileID: 6050533262800101384, guid: dad1440f0e79c534b892dc3ae743c684, type: 3}
   enemyMPrefab: {fileID: 1482275436596416566, guid: 0166b53a5657ecd408eb0e31767e486c, type: 3}
   enemySPrefab: {fileID: 2823661291223442917, guid: ef1b0f3fd22cc8c42be111359ff3ec1d, type: 3}
@@ -2494,6 +2495,8 @@ MonoBehaviour:
   bulletPlayerBPrefab: {fileID: 7377864900576956837, guid: 24a01aea603da6840ae704af7fbc845c, type: 3}
   bulletEnemyAPrefab: {fileID: 7377864900576956837, guid: 5582d6954c1e33f409bd7544fb2d37f9, type: 3}
   bulletEnemyBPrefab: {fileID: 7377864900576956837, guid: 6d0d1dd83e3af0149a3b2380e6440997, type: 3}
+  bulletBossAPrefab: {fileID: 7377864900576956837, guid: f2fa9fae23ea5ac4fac641f424b2d53d, type: 3}
+  bulletBossBPrefab: {fileID: 7377864900576956837, guid: 4ed874fff2ad0994e9b56d53ede483b3, type: 3}
   bulletFollowerPrefab: {fileID: 4394737214705718064, guid: 5c23e3f46b7e5cb48b4f0d95c8df0ad6, type: 3}
 --- !u!4 &1171407262
 Transform:
